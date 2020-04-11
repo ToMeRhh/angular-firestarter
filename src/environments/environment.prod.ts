@@ -1,12 +1,12 @@
 export const environment = {
   production: true,
   firebase:  {
-    apiKey: 'AIzaSyAKlEX5a8PQaadYNSrohqfl33O37Kjkv1Y',
-    authDomain: 'angular-voxer.firebaseapp.com',
-    databaseURL: 'https://angular-voxer.firebaseio.com',
-    projectId: 'angular-voxer',
-    storageBucket: 'angular-voxer.appspot.com',
-    messagingSenderId: '122050526979',
-    appId: '1:122050526979:web:529304dce5ffca7a'
+    apiKey: "AIzaSyCaGVVQTZBavis9uKjHvNzJGBdHYK_K2KM",
+    authDomain: "eatingtime-a32ca.firebaseapp.com",
+    databaseURL: "https://eatingtime-a32ca.firebaseio.com",
+    projectId: "eatingtime-a32ca",
+    storageBucket: "eatingtime-a32ca.appspot.com",
+    messagingSenderId: "294151628656",
+    appId: "1:294151628656:web:039ad2ed6b5f1b5c4e11b5"
   }
 };
