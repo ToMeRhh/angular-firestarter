@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { BoardDialogComponent } from '../dialogs/board-dialog.component';
 import { FeedingEventBoard } from '../board.model';
 import { FeedingBoardService } from '../board.service';
+import { AngularFirestoreCollection } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-boards-list',
@@ -13,7 +14,7 @@ import { FeedingBoardService } from '../board.service';
 })
 export class BoardsListComponent implements OnInit, OnDestroy {
 
-  boards: FeedingEventBoard[];
+  boards:  AngularFirestoreCollection<FeedingEventBoard>;
   sub: Subscription;
 
   constructor(public feedingBoardService: FeedingBoardService, public dialog: MatDialog) {}
@@ -30,13 +31,13 @@ export class BoardsListComponent implements OnInit, OnDestroy {
   // }
 
   openBoardDialog(): void {
+    console.log();
     const dialogRef = this.dialog.open(BoardDialogComponent, {
       width: '400px',
       data: { }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
       if (result) {
         this.feedingBoardService.createFeedingBoard({
           board_creation_time: result ? result : new Date().toJSON().slice(0,10),

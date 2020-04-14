@@ -5,6 +5,7 @@ export interface FeedingEventBoard{
 }
 export interface FeedingEvent {
 	time_sec?: number;
-	type?: 'breastfeed' | 'formula';
 	editor?: string;
+	food_type?: 'breastfeed' | 'formula';
+	description?: string;
 }

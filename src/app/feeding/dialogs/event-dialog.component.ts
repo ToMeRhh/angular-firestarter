@@ -10,27 +10,23 @@ import { FeedingBoardService } from '../board.service';
     <div mat-dialog-content class="content">
       <mat-form-field>
         <textarea
-          placeholder="Task Time"
+          placeholder="Event Time"
           matInput
-          [(ngModel)]="data.feedingEvent.time_sec"
+          [(ngModel)]="data.event.time_sec"
         ></textarea>
       </mat-form-field>
       <br />
       <mat-button-toggle-group
         #group="matButtonToggleGroup"
-        [(ngModel)]="data.feedingEvent.editor"
-      >
-        <mat-button-toggle *ngFor="let opt of editorOptions" [value]="opt">
-          <mat-icon [ngClass]="opt">{{
-            opt === 'Meital' ? 'check_circle' : 'lens'
-          }}</mat-icon>
-        </mat-button-toggle>
+        [(ngModel)]="data.event.editor">
+        <mat-button-toggle *ngFor="let opt of editorOptions" [value]="opt">{{opt}}</mat-button-toggle>
       </mat-button-toggle-group>
     </div>
     <div mat-dialog-actions>
       <button mat-button [mat-dialog-close]="data" cdkFocusInitial>
         {{ data.isNew ? 'Add Task' : 'Update Task' }}
       </button>
+      
 
       <app-delete-button
         (delete)="handleTaskDelete()"

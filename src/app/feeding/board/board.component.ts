@@ -13,30 +13,37 @@ import { FeedingEvent } from '../board.model';
 export class FeedingBoardComponent {
   @Input() board;
 
-  // taskDrop(event: CdkDragDrop<string[]>) {
-  //   moveItemInArray(this.board.tasks, event.previousIndex, event.currentIndex);
-  //   this.boardService.updateTasks(this.board.id, this.board.tasks);
-  // }
+  taskDrop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.board.events, event.previousIndex, event.currentIndex);
+    this.boardService.updateFeedingEvents(this.board.uid, this.board.events);
+  }
+
+  getCurrentTime(): string {
+    const x = new Date();
+    return x.getHours() + ":" + x.getMinutes() + ":" + x.getSeconds();
+  }
 
   openDialog(feedingEvent?: FeedingEvent, idx?: number): void {
+    const newEvent = { time_sec: this.getCurrentTime(), editor: "Tomer" };
     const dialogRef = this.dialog.open(EventDialogComponent , {
       width: '500px',
       data: feedingEvent
-        ? { feedingEvent: { ...feedingEvent }, isNew: false, boardId: this.board.id, idx }
-        : { feedingEvent: { time_sec: new Date().getTime() / 1000, editor: "Tomer" }, isNew: false }
+        ? { event: { ...feedingEvent }, isNew: false, boardId: this.board.id, idx }
+        : { event: newEvent, isNew: true }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (result.isNew) {
-          this.boardService.updateFeedingEvents(this.board.id, [
-            ...this.board.tasks,
-            result.task
-          ]);
+          this.boardService.addFeedingEvents(this.board.id, result.event);
+          // this.boardService.updateFeedingEvents(this.board.id, [
+          //   ...this.board.events,
+          //   result.event
+          // ]);
         } else {
-          const update = this.board.tasks;
-          update.splice(result.idx, 1, result.task);
-          this.boardService.updateFeedingEvents(this.board.id, this.board.events);
+          const update = this.board.events;
+          update.splice(result.idx, 1, result.event);
+          this.boardService.updateFeedingEvents(this.board.id, update);
         }
       }
     });

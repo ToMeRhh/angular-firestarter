@@ -5,7 +5,6 @@ import * as firebase from 'firebase/app';
 import { switchMap, map } from 'rxjs/operators';
 import { FeedingEvent, FeedingEventBoard } from './board.model';
 
-const boardsCollectionName = 'feeding_boards';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +17,9 @@ export class FeedingBoardService {
    */
   async createFeedingBoard(data: FeedingEventBoard) {
     const user = await this.afAuth.auth.currentUser;
-    return this.db.collection(boardsCollectionName).add({
+    return this.db.collection('feeding_boards').add({
       ...data,
       uid: user.uid,
-      debug: "123",
       events: []
     });
   }
@@ -34,10 +32,15 @@ export class FeedingBoardService {
       switchMap(user => {
         if (user) {
           return this.db
-            .collection<FeedingEventBoard>(boardsCollectionName, ref =>
+            .collection<FeedingEventBoard>('feeding_boards', ref =>
               ref.where('uid', '==', user.uid).orderBy('board_creation_time')
-            )
-            .valueChanges({ idField: 'uid' });
+            ).snapshotChanges().pipe(
+      map(actions => actions.map(a => {
+        const data = a.payload.doc.data() as FeedingEventBoard;
+        const id = a.payload.doc.id;
+        return { id, ...data };
+      }))
+    );
         } else {
           return [];
         }
@@ -46,13 +49,14 @@ export class FeedingBoardService {
     );
   }
 
+
   // /**
   //  * Run a batch write to change the priority of each board for sorting
   //  */
   // sortFeedingBoards(boards: Board[]) {
   //   const db = firebase.firestore();
   //   const batch = db.batch();
-  //   const refs = boards.map(b => db.collection(boardsCollectionName).doc(b.time_sec));
+  //   const refs = boards.map(b => db.collection('feeding_boards').doc(b.time_sec));
   //   refs.forEach((ref, idx) => batch.update(ref, { priority: idx }));
   //   batch.commit();
   // }
@@ -61,9 +65,8 @@ export class FeedingBoardService {
    * Delete board
    */
   deleteFeedingBoards(boardId: string) {
-    console.log("boardid is: " + boardId);
     return this.db
-      .collection(boardsCollectionName)
+      .collection('feeding_boards')
       .doc(boardId)
       .delete();
   }
@@ -71,11 +74,21 @@ export class FeedingBoardService {
   /**
    * Updates the tasks on board
    */
-  updateFeedingEvents(boardId: string, event: FeedingEvent[]) {
+  updateFeedingEvents(boardId: string, events: FeedingEvent[]) {
     return this.db
-      .collection(boardsCollectionName)
+      .collection('feeding_boards')
       .doc(boardId)
-      .update({ event });
+      .update({ events });
+  }
+
+  /**
+   * Adds an event to the board
+   */
+  addFeedingEvents(boardId: string, event: FeedingEvent) {
+    return this.db
+      .collection('feeding_boards')
+      .doc(boardId)
+      .update({ events: firebase.firestore.FieldValue.arrayUnion(event) });
   }
 
   /**
@@ -83,7 +96,7 @@ export class FeedingBoardService {
    */
   removeFeedingEvent(boardId: string, event: FeedingEvent) {
     return this.db
-      .collection(boardsCollectionName)
+      .collection('feeding_boards')
       .doc(boardId)
       .update({
         tasks: firebase.firestore.FieldValue.arrayRemove(event)

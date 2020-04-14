@@ -10,13 +10,19 @@
     </mat-card-subtitle>
   </mat-card-header>
 
-  <div class="tasks">
+  <div 
+    class="events"
+    cdkDropList
+    cdkDropListOrientation="vertical"
+    (cdkDropListDropped)="taskDrop($event)" 
+  >
     <div
       class="inner-card"
+      cdkDrag
       *ngFor="let event of board.events; let i = index"
       (click)="openDialog(event, i)"
     >
-      <mat-card> {{ event.time_sec }} </mat-card>
+      <mat-card> {{ event.time_sec }} (Added by {{ event.editor }}) </mat-card>
     </div>
 
     <button mat-stroked-button (click)="openDialog()">
